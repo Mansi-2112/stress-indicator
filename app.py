@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,17 +5,13 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime
 import joblib
-import io
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
 from graphviz import Digraph
 
 # ==========================================
 # CONFIGURATION & THEME
 # ==========================================
 st.set_page_config(
-    page_title="MindGuard  | Mental Wellness Analyzer",
+    page_title="MindGuard | Mental Wellness Analyzer",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -110,7 +105,6 @@ def load_model():
         model = joblib.load('stress_model.pkl')
         return model
     except:
-        # If model doesn't exist, we return None and use a logic-based fallback for demo
         return None
 
 model = load_model()
@@ -129,55 +123,11 @@ def get_status_data(score):
     else:
         return "Severe Stress", "🔴 Critical", "Warning: Severe stress detected. Please consult a professional counselor immediately.", "#FF4B4B"
 
-def generate_pdf_report(user_info, prediction_data, ai_summary):
-    buffer = io.BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    
-    # Header
-    p.setFillColor(colors.HexColor("#0A192F"))
-    p.rect(0, height-100, width, 100, fill=1)
-    p.setFillColor(colors.white)
-    p.setFont("Helvetica-Bold", 24)
-    p.drawString(50, height-60, "MINDGUARD AI - CLINICAL REPORT")
-    
-    # Body
-    p.setFillColor(colors.black)
-    p.setFont("Helvetica-Bold", 14)
-    p.drawString(50, height-130, f"Patient Name: {user_info['name']}")
-    p.setFont("Helvetica", 12)
-    p.drawString(50, height-150, f"Assessment Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-    p.drawString(50, height-170, f"Age/Gender: {user_info['age']} / {user_info['gender']}")
-    
-    p.line(50, height-190, width-50, height-190)
-    
-    p.setFont("Helvetica-Bold", 16)
-    p.drawString(50, height-220, "STRESS ANALYSIS RESULTS")
-    p.setFont("Helvetica-Bold", 20)
-    p.setFillColor(colors.hexColor(prediction_data['color']))
-    p.drawString(50, height-250, f"Category: {prediction_data['class']}")
-    
-    p.setFillColor(colors.black)
-    p.setFont("Helvetica", 12)
-    p.drawString(50, height-280, f"Stress Probability Score: {prediction_data['score']}%")
-    
-    p.setFont("Helvetica-Bold", 14)
-    p.drawString(50, height-320, "AI Clinical Summary:")
-    p.setFont("Helvetica", 11)
-    text = p.beginText(50, height-340)
-    text.textLines(ai_summary)
-    p.drawText(text)
-    
-    p.showPage()
-    p.save()
-    buffer.seek(0)
-    return buffer
-
 # ==========================================
 # SIDEBAR
 # ==========================================
 with st.sidebar:
-    st.markdown("<h2 class='gradient-text'>MindGuard AI</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='gradient-text'>MindGuard</h2>", unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/2966/2966327.png", width=100)
     st.info("This AI system uses advanced machine learning to detect stress patterns based on physiological and psychological markers.")
     
@@ -209,10 +159,10 @@ col1, col2 = st.columns([1, 2])
 with col1:
     st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
     st.subheader("👤 User Profile")
-    u_name = st.text_input("Full Name", "John Doe")
+    u_name = st.text_input("Full Name", "                ")
     u_age = st.number_input("Age", 18, 100, 25)
     u_gender = st.selectbox("Gender", ["Male", "Female", "Non-binary", "Prefer not to say"])
-    u_role = st.radio("Status", ["Student", "Professional"])
+    u_role = st.radio("Status", ["Student", "employee"])
     st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
@@ -255,8 +205,6 @@ with col2:
 # PREDICTION LOGIC
 # ==========================================
 if st.button("🔍 ANALYZE MY STRESS LEVEL"):
-    # Calculate a Mock Score for Demo purposes if no model
-    # (In production, you'd format features and call model.predict_proba)
     feature_sum = anxiety + mood + irritability + concentration + academic_load + (10 - confidence/10) + (10 - attendance/10)
     mock_score = min(int((feature_sum / 60) * 100), 100)
     
@@ -264,7 +212,7 @@ if st.button("🔍 ANALYZE MY STRESS LEVEL"):
     
     st.divider()
     
-    # 5 & 6. STRESS METER & STATUS
+    # STRESS METER & STATUS
     m_col1, m_col2, m_col3 = st.columns([1, 1, 1])
     
     with m_col1:
@@ -302,8 +250,7 @@ if st.button("🔍 ANALYZE MY STRESS LEVEL"):
         st.write(ai_msg)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # 7. RADAR CHART & TREE
-    st.columns(1)
+    # RADAR CHART & TREE
     v_col1, v_col2 = st.columns(2)
     
     with v_col1:
@@ -339,13 +286,12 @@ if st.button("🔍 ANALYZE MY STRESS LEVEL"):
         dot.node('C', 'Academic', color='#8892B0', fontcolor='white')
         dot.node('D', 'Physical', color='#8892B0', fontcolor='white')
         dot.edges(['AB', 'AC', 'AD'])
-        # Dynamic coloring
         if mock_score > 60:
             dot.edge('A', 'C', color='#FF4B4B', penwidth='3')
         st.graphviz_chart(dot)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # 8. RECOMMENDATIONS
+    # RECOMMENDATIONS
     st.subheader("🚀 Personalized Action Plan")
     rec_col1, rec_col2, rec_col3 = st.columns(3)
     
@@ -367,31 +313,13 @@ if st.button("🔍 ANALYZE MY STRESS LEVEL"):
                 </div>
             """, unsafe_allow_html=True)
 
-    # 18. DOWNLOAD REPORT
-    st.divider()
-    report_data = {
-        'class': stress_class,
-        'score': mock_score,
-        'color': stress_color
-    }
-    user_info = {'name': u_name, 'age': u_age, 'gender': u_gender}
-    
-# from reportlab.lib import colors
-#  p.setFillColor(colors.HexColor(prediction_data['color']))
-# st.download_button(
-#         label="📄 Download Professional Wellness Report",
-#         data=pdf_file,
-#         file_name=f"Wellness_Report_{u_name}.pdf",
-#         mime="application/pdf"
-    
-
 # ==========================================
 # FOOTER
 # ==========================================
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("""
     <div style='text-align: center; color: #8892B0; border-top: 1px solid rgba(100,255,218,0.1); padding-top: 20px;'>
-        <p>Made with ❤️ using Streamlit & Advanced AI | MindGuard Enterprise v2.0</p>
+        <p>Made with ❤️ </p>
     </div>
 """, unsafe_allow_html=True)
 
