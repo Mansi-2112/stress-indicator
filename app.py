@@ -16,7 +16,7 @@ from graphviz import Digraph
 # CONFIGURATION & THEME
 # ==========================================
 st.set_page_config(
-    page_title="MindGuard AI | Mental Wellness Analyzer",
+    page_title="MindGuard  | Mental Wellness Analyzer",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
