@@ -1,5 +1,4 @@
 
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -377,13 +376,14 @@ if st.button("🔍 ANALYZE MY STRESS LEVEL"):
     }
     user_info = {'name': u_name, 'age': u_age, 'gender': u_gender}
     
-    pdf_file = generate_pdf_report(user_info, report_data, ai_msg)
-    st.download_button(
-        label="📄 Download Professional Wellness Report",
-        data=pdf_file,
-        file_name=f"Wellness_Report_{u_name}.pdf",
-        mime="application/pdf"
-    )
+# from reportlab.lib import colors
+#  p.setFillColor(colors.HexColor(prediction_data['color']))
+# st.download_button(
+#         label="📄 Download Professional Wellness Report",
+#         data=pdf_file,
+#         file_name=f"Wellness_Report_{u_name}.pdf",
+#         mime="application/pdf"
+    
 
 # ==========================================
 # FOOTER
